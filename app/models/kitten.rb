@@ -11,4 +11,15 @@ class Kitten < ApplicationRecord
   validates :softness, presence: true, numericality: { only_integer: true }
   validates_inclusion_of :softness, :in => 0..11
   validates :image, presence: true
+  validates :age_limits
+
+  private
+
+  def age_limits
+    if age > 99
+      errors.add(:age,"age must be less than 99 ")
+    elsif age < 0
+      errors.add(:age,"Age Cant be negative")
+    end
+  end
 end

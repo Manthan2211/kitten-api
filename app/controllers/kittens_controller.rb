@@ -50,7 +50,7 @@ class KittensController < ApplicationController
           render json: { errors: @kitten.errors.full_messages }, status: :bad_request
         end
       else
-        render json: "You can't delete this kitten", status: :bad_request
+        render json: "You are not authorized to update this kitten", status: :bad_request
       end
     else
       render json: "Kitten Does not exists", status: :bad_request
