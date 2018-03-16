@@ -16,7 +16,7 @@ class KittensController < ApplicationController
   end
 
   def update
-    if  @kitten = Kitten.find(params[:id]) 
+    @kitten = Kitten.find(params[:id]) 
       if current_user?(@kitten.user)
         if @kitten.update_attributes(kitten_params) 
           render json: {status: 'Kitten updated successfully'}, status: :updated
@@ -24,19 +24,21 @@ class KittensController < ApplicationController
           render json: { errors: @kitten.errors.full_messages }, status: :bad_request
         end
       else
-        render json: "You can't update this kitten", status: :bad_request
+        render json: { errors: "You are not authorized to update this kitten" }, status: :bad_request
       end
-    else
-      render json: "Kitten Does not exists" , status: :bad_request
-    end
+    rescue ActiveRecord::RecordNotFound => e
+    render json: {
+      error: e.to_s
+    }, status: :not_found
   end
 
   def show
-    if @kitten = Kitten.find(params[:id])
-      render json: @kitten
-    else
-      render json: { errors: @kitten.errors.full_messages }, status: :bad_request
-    end
+     @kitten = Kitten.find(params[:id])
+    render json: @kitten
+    rescue ActiveRecord::RecordNotFound => e
+    render json: {
+      error: e.to_s
+    }, status: :not_found
   end
 
   def destroy
