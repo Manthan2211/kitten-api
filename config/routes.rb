@@ -7,6 +7,14 @@ Rails.application.routes.draw do
       delete 'logout'
     end
   end
+
+  resources :kittens do
+    member do
+      put 'like', to: "kittens#upvote"
+      put 'dislike', to: "kittens#downvote"
+    end
+  end
+
   resources :users
   resources :kittens
 end

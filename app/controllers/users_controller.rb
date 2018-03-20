@@ -20,12 +20,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def logout
-    auth_token = ""
-    @current_user = nil
-    render json: {status: 'User logout successfully'}, status: :ok
-  end
-
   private
 
   def user_params
