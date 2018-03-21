@@ -21,7 +21,14 @@ class Kitten < ApplicationRecord
 #   options hash accepts four keys for better customization :only, :methods, :include, :except
 #   so whenever such keys are found, we call super with those keys to provide response consisting only those keys  
     if options.key?(:only) or options.key?(:methods) or options.key?(:include) or options.key?(:except)
-      h = super(options)
+
+       current_user = options[:current_user]
+       #binding.pry
+      options.delete(:current_user)
+       h = super(options)
+      h[:my_kitten] = my_kitten(current_user.id) if current_user.present?
+      h[:liked_by_me] = liked_by_me(current_user) if current_user.present?
+      h
     else
       h = super( methods: [:like_count, :like_by]) 
          
@@ -35,6 +42,24 @@ class Kitten < ApplicationRecord
   def like_by
     self.votes_for.up.by_type(User).voters
   end
+
+  def my_kitten(current_user_id)
+    if current_user_id == self.user.id
+      true
+    else
+      false
+    end
+  end
+
+  def liked_by_me(current_user)
+    if current_user == self.votes_for.up.by_type(User).voters
+      true
+    else
+      false
+    end
+  end
+
+
 
   private
 

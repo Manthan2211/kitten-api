@@ -12,8 +12,10 @@ Rails.application.routes.draw do
     member do
       put 'like', to: "kittens#upvote"
       put 'dislike', to: "kittens#downvote"
+      get "likers"
     end
   end
+
 
   resources :users
   resources :kittens

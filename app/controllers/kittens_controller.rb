@@ -1,6 +1,6 @@
 class KittensController < ApplicationController
-  before_action :authenticate_request!,only: [:create, :update, :destroy, :upvote, :downvote]
-
+  before_action :authenticate_user,except: :index
+  
   def index
     @kittens = Kitten.all
     render :json => @kittens.as_json( :except => [:created_at, :updated_at], 
@@ -35,7 +35,7 @@ class KittensController < ApplicationController
 
   def show
      @kitten = Kitten.find(params[:id])
-    render json: @kitten.as_json(except: [:created_at, :updated_at], methods: [:like_count, :like_by]) 
+    render json: @kitten.as_json(except: [:created_at, :updated_at], methods: [:like_count, :like_by],current_user: @current_user)
     rescue ActiveRecord::RecordNotFound => e
     render json: {
       error: e.to_s
@@ -72,8 +72,15 @@ class KittensController < ApplicationController
       }, status: :not_found
   end
 
+  def likers
+    @kitten = Kitten.find(params[:id])
+    render json: @kitten.as_json(only: [],methods:[:like_by])
+  end
+
+
   def downvote
       @kitten = Kitten.find(params[:id])
+
       @kitten.disliked_by @current_user
       render json: {status: "kitten disliked"},status: :ok
        rescue ActiveRecord::RecordNotFound => e
@@ -81,6 +88,8 @@ class KittensController < ApplicationController
       error: e.to_s
     }, status: :not_found
   end
+
+  
 
 
   private
